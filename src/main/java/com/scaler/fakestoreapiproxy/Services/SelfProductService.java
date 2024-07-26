@@ -6,13 +6,16 @@ import com.scaler.fakestoreapiproxy.Models.Product;
 import com.scaler.fakestoreapiproxy.repos.Categoryrepo;
 import com.scaler.fakestoreapiproxy.repos.Productrepo;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Primary
+//@Primary
 public class SelfProductService implements ProductService{
     Productrepo productrepo;
     Categoryrepo categoryrepo;
@@ -31,11 +34,16 @@ public class SelfProductService implements ProductService{
         }
     }
 
+//    @Override
+//    public List<Product> getAllProducts() {
+//
+//        return null;
+//    }
     @Override
-    public List<Product> getAllProducts() {
-        return null;
+    public Page<Product> getAllProductsbypage(int PageNumber, int PageSize) {
+        return productrepo.findAll(PageRequest.of(PageNumber,PageSize
+                ,Sort.by("price").ascending()));
     }
-
     @Override
     public Product updateProduct(long id, Product product) {
         return null;

@@ -1,6 +1,8 @@
 package com.scaler.fakestoreapiproxy.repos;
 
 import com.scaler.fakestoreapiproxy.Models.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +15,7 @@ public interface Productrepo extends JpaRepository<Product, Long> {
     Optional<Product>findByTitle(String title);
     List<Product> findByTitleAndDescription(String Description, String title);
     Product save(Product product);
+
+    @Override
+    Page<Product> findAll(Pageable pageable);
 }

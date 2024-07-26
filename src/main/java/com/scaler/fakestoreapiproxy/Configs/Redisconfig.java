@@ -1,2 +1,14 @@
-package com.scaler.fakestoreapiproxy.Configs;public class Redisconfig {
+package com.scaler.fakestoreapiproxy.Configs;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+
+@Configuration
+public class Redisconfig {
+    public RedisTemplate<String,Object> getredistemplate(RedisConnectionFactory redisConnectionFactory){
+        RedisTemplate<String,Object>redisTemplate=new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        return redisTemplate;
+    }
 }

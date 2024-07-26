@@ -5,14 +5,20 @@ import com.scaler.fakestoreapiproxy.DTOs.FakeStoreResponseDto;
 import com.scaler.fakestoreapiproxy.Exceptions.ProductNotFoundException.ProductNotFoundException;
 import com.scaler.fakestoreapiproxy.Models.Category;
 import com.scaler.fakestoreapiproxy.Models.Product;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 @Service
+@Primary
 public class FakeStoreProductService implements ProductService{
     private RestTemplate restTemplate;
-    public FakeStoreProductService(RestTemplate restTemplate){
+    private RedisTemplate redisTemplate;
+    public FakeStoreProductService(RestTemplate restTemplate,RedisTemplate redisTemplate){
+        this.redisTemplate=redisTemplate;
         this.restTemplate=restTemplate;
     }
     @Override
@@ -21,14 +27,18 @@ public class FakeStoreProductService implements ProductService{
         that to understandable format of client i.e, product class where as 3rd party apis' understandable format is fakestoreapidto format.
          */
         //System.out.println("entered getproduct");
+        Product p=(Product) redisTemplate.opsForHash().get("PRODUCTS","PRODUCT_"+id);
+        if(p!=null){
+            return p;
+        }
         String url = "https://fakestoreapi.com/products/" + id;
         FakeStoreResponseDto fdto=restTemplate.getForObject(url, FakeStoreResponseDto.class);
         if(fdto==null){
             throw new ProductNotFoundException("Product not found");
         }
-        else{
-            return convertFakeStoreDtotoProduct(fdto);
-        }
+        p=convertFakeStoreDtotoProduct(fdto);
+        redisTemplate.opsForHash().put("PRODUCTS","PRODUCT_"+id,p);
+        return p;
     }
     public Product convertFakeStoreDtotoProduct(FakeStoreResponseDto fdto){
         //0System.out.println(fdto.getDescription());
@@ -94,14 +104,24 @@ public class FakeStoreProductService implements ProductService{
 
     }
 
-    @Override
-    public List<Product> getAllProducts() {
-        String url = "https://fakestoreapi.com/products/";
-        FakeStoreResponseDto[] fdto=restTemplate.getForObject(url, FakeStoreResponseDto[].class);
-        Product[] products=new Product[fdto.length];
-        for(int i=0;i<fdto.length;i++){
-            products[i]=convertFakeStoreDtotoProduct(fdto[i]);
-        }
-        return List.of(products);
+//    @Override
+//    public List<Product> getAllProducts() {
+//        String url = "https://fakestoreapi.com/products/";
+//        FakeStoreResponseDto[] fdto=restTemplate.getForObject(url, FakeStoreResponseDto[].class);
+//        Product[] products=new Product[fdto.length];
+//        for(int i=0;i<fdto.length;i++){
+//            products[i]=convertFakeStoreDtotoProduct(fdto[i]);
+//        }
+//        return List.of(products);
+//    }
+@Override
+public Page<Product> getAllProductsbypage(int pageNumber, int pageSize) {
+    String url = "https://fakestoreapi.com/products/";
+    FakeStoreResponseDto[] fdto=restTemplate.getForObject(url, FakeStoreResponseDto[].class);
+    Product[] products=new Product[fdto.length];
+    for(int i=0;i<fdto.length;i++){
+        products[i]=convertFakeStoreDtotoProduct(fdto[i]);
     }
+    return null;
+}
 }
