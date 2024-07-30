@@ -1,5 +1,6 @@
 package com.scaler.fakestoreapiproxy.Services;
 
+import com.scaler.fakestoreapiproxy.Common.Authcommon;
 import com.scaler.fakestoreapiproxy.Exceptions.ProductNotFoundException.ProductNotFoundException;
 import com.scaler.fakestoreapiproxy.Models.Category;
 import com.scaler.fakestoreapiproxy.Models.Product;
@@ -13,18 +14,23 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import com.scaler.fakestoreapiproxy.Common.Authcommon;
 
 @Service
 //@Primary
 public class SelfProductService implements ProductService{
     Productrepo productrepo;
+
     Categoryrepo categoryrepo;
-    public SelfProductService(Productrepo productrepo,Categoryrepo categoryrepo){
+    public SelfProductService(Productrepo productrepo,Categoryrepo categoryrepo,Authcommon authcommon){
         this.productrepo=productrepo;
         this.categoryrepo=categoryrepo;
+
     }
     @Override
     public Product getProductById(long id) throws ProductNotFoundException {
+
+        //The above implementation is just to check for calling user service implementation only using eureka server.
         Optional<Product>optionalProduct=productrepo.findById(id);
         if(optionalProduct.isEmpty()){
             throw new ProductNotFoundException("Product not found");

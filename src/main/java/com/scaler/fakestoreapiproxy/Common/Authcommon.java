@@ -17,7 +17,8 @@ public class Authcommon {
     // here also which leads to duplication so removed entity tag for it and UserDto.
     public UserDto validate(String tokenvalue){
         //System.out.println("Auth validate entered");
-            ResponseEntity<UserDto>response =restTemplate.getForEntity("http://localhost:8083/users/validate/"+tokenvalue, UserDto.class);
+            //ResponseEntity<UserDto>response =restTemplate.getForEntity("http://localhost:8083/users/validate/"+tokenvalue, UserDto.class);
+        ResponseEntity<UserDto>response =restTemplate.getForEntity("http://USERSERVICE/users/validate/"+tokenvalue, UserDto.class);
             if(!response.hasBody()){
                 return null;
             }

@@ -1,5 +1,6 @@
 package com.scaler.fakestoreapiproxy.Services;
 
+import com.scaler.fakestoreapiproxy.Common.Authcommon;
 import com.scaler.fakestoreapiproxy.DTOs.FakeStoreRequestDto;
 import com.scaler.fakestoreapiproxy.DTOs.FakeStoreResponseDto;
 import com.scaler.fakestoreapiproxy.Exceptions.ProductNotFoundException.ProductNotFoundException;
@@ -17,9 +18,11 @@ import java.util.List;
 public class FakeStoreProductService implements ProductService{
     private RestTemplate restTemplate;
     private RedisTemplate redisTemplate;
-    public FakeStoreProductService(RestTemplate restTemplate,RedisTemplate redisTemplate){
+    private Authcommon authcommon;
+    public FakeStoreProductService(RestTemplate restTemplate,RedisTemplate redisTemplate,Authcommon authcommon){
         this.redisTemplate=redisTemplate;
         this.restTemplate=restTemplate;
+        this.authcommon=authcommon;
     }
     @Override
     public Product getProductById(long id) throws ProductNotFoundException {
@@ -27,6 +30,12 @@ public class FakeStoreProductService implements ProductService{
         that to understandable format of client i.e, product class where as 3rd party apis' understandable format is fakestoreapidto format.
          */
         //System.out.println("entered getproduct");
+        try{
+            authcommon.validate("");
+        }
+        catch(Exception e){
+            System.out.println("User is called");
+        }
         Product p=(Product) redisTemplate.opsForHash().get("PRODUCTS","PRODUCT_"+id);
         if(p!=null){
             return p;
